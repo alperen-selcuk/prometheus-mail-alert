@@ -1,0 +1,165 @@
+defaultRules:
+  create: true
+  rules:
+    alertmanager: false
+    configReloaders: false
+    etcd: false
+    general: true
+    k8sContainerCpuUsageSecondsTotal: false
+    k8sContainerMemoryCache: false
+    k8sContainerMemoryRss: false
+    k8sContainerMemorySwap: false
+    k8sContainerMemoryWorkingSetBytes: false
+    k8sContainerResource: false
+    k8sPodOwner: false
+    kubeApiserverAvailability: false
+    kubeApiserverBurnrate: false
+    kubeApiserverHistogram: false
+    kubeApiserverSlos: false
+    kubeControllerManager: false
+    kubePrometheusGeneral: false
+    kubePrometheusNodeRecording: false
+    kubeProxy: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeStateMetrics: false
+    kubelet: false
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: false
+    kubernetesSystem: true
+    network: false
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: false
+    prometheus: false
+    prometheusOperator: false
+    windows: false
+
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: "true"
+    tolerations:
+    - effect: NoExecute
+      key: CriticalAddonsOnly
+      operator: Exists
+    retention: 20d
+    
+    # Enable rule discovery
+    ruleSelector:
+      matchLabels:
+        prometheus: kube-prometheus
+        role: alert-rules
+    
+    # Enable AlertManager integration
+    alerting:
+      alertmanagers:
+      - namespace: monitoring
+        name: prometheus-kube-prometheus-alertmanager
+        port: http-web
+        pathPrefix: /
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: "true"
+    tolerations:
+    - effect: NoExecute
+      key: CriticalAddonsOnly
+      operator: Exists
+  
+  config:
+    global:
+      smtp_smarthost: 'smtp-host:smtp-port'
+      smtp_from: 'sender-mail'
+      smtp_auth_username: 'sender-mail'
+      smtp_auth_password: ''
+      smtp_require_tls: true
+      resolve_timeout: 2m
+    
+    receivers:
+    - name: "null"
+    - name: custom-critical-alerts
+      email_configs:
+      - to: 'receiver-mail'
+        from: 'sender-mail'
+        headers:
+          Subject: '[CRITICAL] {{ .GroupLabels.alertname }}'
+    - name: custom-warning-alerts  
+      email_configs:
+      - to: 'receiver-mail'
+        from: 'sender-mail'
+        headers:
+          Subject: '[WARNING] {{ .GroupLabels.alertname }}'
+    - name: custom-node-alerts
+      email_configs:
+      - to: 'receiver-mail'
+        from: 'sender-mail'
+        headers:
+          Subject: '[NODE] {{ .GroupLabels.alertname }}'
+    
+    route:
+      group_by: ['alertname', 'cluster', 'namespace']
+      group_interval: 5m
+      group_wait: 30s
+      receiver: "null"
+      repeat_interval: 12h
+      routes:
+      - receiver: custom-node-alerts
+        continue: false
+        matchers:
+        - alertname =~ "CTNode.*"
+      - receiver: custom-critical-alerts
+        continue: false  
+        matchers:
+        - team = "devopsteam"
+        - severity = "critical"
+      - receiver: custom-warning-alerts
+        continue: false
+        matchers:
+        - team = "devopsteam"
+        - severity = "warning"
+
+grafana:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  tolerations:
+  - effect: NoExecute
+    key: CriticalAddonsOnly
+    operator: Exists
+
+nodeExporter:
+  enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  tolerations:
+  - effect: NoExecute
+    key: CriticalAddonsOnly
+    operator: Exists
+
+kubeStateMetrics:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  tolerations:
+  - effect: NoExecute
+    key: CriticalAddonsOnly
+    operator: Exists
+
+prometheusOperator:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  tolerations:
+  - effect: NoExecute
+    key: CriticalAddonsOnly
+    operator: Exists
+  
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: "true"
+      tolerations:
+      - effect: NoExecute
+        key: CriticalAddonsOnly
+        operator: Exists
+
