@@ -38,14 +38,7 @@ defaultRules:
 
 prometheus:
   prometheusSpec:
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: "true"
-    tolerations:
-    - effect: NoExecute
-      key: CriticalAddonsOnly
-      operator: Exists
-    retention: 20d
-    
+
     # Enable rule discovery
     ruleSelector:
       matchLabels:
@@ -61,13 +54,6 @@ prometheus:
         pathPrefix: /
 alertmanager:
   enabled: true
-  alertmanagerSpec:
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: "true"
-    tolerations:
-    - effect: NoExecute
-      key: CriticalAddonsOnly
-      operator: Exists
   
   config:
     global:
@@ -121,45 +107,5 @@ alertmanager:
         - team = "devopsteam"
         - severity = "warning"
 
-grafana:
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: "true"
-  tolerations:
-  - effect: NoExecute
-    key: CriticalAddonsOnly
-    operator: Exists
 
-nodeExporter:
-  enabled: true
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: "true"
-  tolerations:
-  - effect: NoExecute
-    key: CriticalAddonsOnly
-    operator: Exists
-
-kubeStateMetrics:
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: "true"
-  tolerations:
-  - effect: NoExecute
-    key: CriticalAddonsOnly
-    operator: Exists
-
-prometheusOperator:
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: "true"
-  tolerations:
-  - effect: NoExecute
-    key: CriticalAddonsOnly
-    operator: Exists
-  
-  admissionWebhooks:
-    patch:
-      nodeSelector:
-        node-role.kubernetes.io/control-plane: "true"
-      tolerations:
-      - effect: NoExecute
-        key: CriticalAddonsOnly
-        operator: Exists
 
