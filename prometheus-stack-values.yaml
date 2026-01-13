@@ -38,6 +38,13 @@ defaultRules:
 
 prometheus:
   prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
 
     # Enable rule discovery
     ruleSelector:
@@ -52,8 +59,25 @@ prometheus:
         name: prometheus-kube-prometheus-alertmanager
         port: http-web
         pathPrefix: /
+        
 alertmanager:
   enabled: true
+  alertmanagerSpec:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: "true"
+    tolerations:
+    - effect: NoExecute
+      key: CriticalAddonsOnly
+      operator: Exists
+    
+    # Storage configuration
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
   
   config:
     global:
@@ -107,5 +131,24 @@ alertmanager:
         - team = "devopsteam"
         - severity = "warning"
 
-
+grafana:
+  enabled: true
+  defaultDatasourceEnabled: true
+  
+  # Storage configuration
+  persistence:
+    enabled: true
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+  
+  sidecar:
+    datasources:
+      enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  tolerations:
+  - effect: NoExecute
+    key: CriticalAddonsOnly
+    operator: Exists
 
