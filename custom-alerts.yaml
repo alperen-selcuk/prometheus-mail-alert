@@ -21,7 +21,7 @@ spec:
       for: 1m
       labels:
         severity: critical
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Node Down"
         description: "Node: {{ $labels.instance }}"
@@ -31,7 +31,7 @@ spec:
       for: 1m
       labels:
         severity: warning
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Node Not Ready"
         description: "Node: {{ $labels.node }}"
@@ -41,7 +41,7 @@ spec:
       for: 5m
       labels:
         severity: warning
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Node CPU > 80%"
         description: "Node: {{ $labels.node }}"
@@ -51,7 +51,7 @@ spec:
       for: 5m
       labels:
         severity: critical
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Node CPU > 90%"
         description: "Node: {{ $labels.node }}"
@@ -61,7 +61,7 @@ spec:
       for: 5m
       labels:
         severity: warning
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Node Memory > 80%"
         description: "Node: {{ $labels.node }}"
@@ -71,7 +71,7 @@ spec:
       for: 5m
       labels:
         severity: critical
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Node Memory > 90%"
         description: "Node: {{ $labels.node }}"
@@ -83,7 +83,7 @@ spec:
       for: 1m
       labels:
         severity: warning
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Pod Crash Looping"
         description: "Namespace: {{ $labels.namespace }}\nPod: {{ $labels.pod }}"
@@ -93,7 +93,7 @@ spec:
       for: 1m
       labels:
         severity: warning
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Pod Not Ready"
         description: "Namespace: {{ $labels.namespace }}\nPod: {{ $labels.pod }}"
@@ -103,7 +103,7 @@ spec:
       for: 1m
       labels:
         severity: critical
-        team: devops
+        team: devopsteam
       annotations:
         summary: "Pod Failed"
         description: "Namespace: {{ $labels.namespace }}\nPod: {{ $labels.pod }}"
